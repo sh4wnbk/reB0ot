@@ -1,5 +1,25 @@
 # ⚡ reB0ot - Hackathon Submission
 
+## Judging Criteria Scorecard
+
+### 1. Application of Technology — Clear, Meaningful Use of IBM Bob
+
+⚡ reB0ot demonstrates deep integration with IBM Bob IDE through a meta-recursive development process: the tool was built entirely using Bob, processes Bob's session exports, and generates outputs designed to be pasted back into Bob. Every feature—from dependency management to credential scanning to session truncation—was implemented using Bob's Code mode, proving that Bob isn't just a development tool but a complete AI-powered engineering environment capable of building production-ready applications.
+
+### 2. Presentation — Clarity and Effectiveness
+
+The submission presents a clear problem (context-switching tax costing developers 20 minutes per switch), a concrete solution (Restoration Strings that compress cognitive state), and quantifiable impact (260 hours saved annually per developer). The `bob_sessions/` folder provides tangible proof of the tool's effectiveness through real exported sessions from its own development, making the value proposition immediately verifiable rather than theoretical.
+
+### 3. Business Value — Practical Impact on a Real Problem
+
+⚡ reB0ot addresses a universal developer pain point with measurable ROI: for teams of 10 developers context-switching 3 times daily, the tool recovers 2,600 hours annually—equivalent to hiring an additional full-time developer. Beyond time savings, it eliminates the cognitive friction of rebuilding mental models and prevents wasted effort on already-rejected approaches, directly improving code quality and developer satisfaction.
+
+### 4. Originality — Unique Approach and Creativity
+
+The originality lies in treating developer cognitive state as compressible, extractable data rather than an ephemeral mental construct. No existing tool captures not just what you were doing but why you chose that approach and what alternatives you already ruled out. The meta-recursive proof—building the tool using itself and documenting that process—demonstrates a level of self-referential innovation that showcases both the tool's utility and Bob's capabilities in a uniquely compelling way.
+
+---
+
 ## Problem and Solution Statement
 
 Every developer has experienced this frustration: you close your IDE after a productive coding session, then return hours or days later only to spend 20 precious minutes just figuring out where you left off. You scroll through files, re-read code comments, check git logs, and try to reconstruct your mental model of what you were building and why. This "context-switching tax" is especially brutal for developers juggling multiple projects, returning from meetings, or picking up work the next morning. The problem isn't just lost time—it's the cognitive load of rebuilding your entire mental state from scratch.
@@ -30,7 +50,15 @@ The efficiency gain is dramatic: developers reclaim those lost 20 minutes every 
 
 ## How IBM Bob and watsonx Were Used
 
-**IBM Bob IDE** was the exclusive development environment for ⚡ reB0ot—every single line of code was written, edited, and debugged using Bob's Code mode. The project demonstrates Bob's capabilities across multiple dimensions:
+**IBM Bob IDE** was the exclusive development environment for ⚡ reB0ot—every single line of code was written, edited, and debugged using Bob's Code mode. During the hackathon window, three significant improvements were implemented entirely through Bob:
+
+1. **Dependency Management Setup**: Bob created `requirements.txt` with pinned versions and implemented virtual environment setup instructions, ensuring reproducible deployments across different systems.
+
+2. **Credential Scanner Precision Fix**: Bob identified and eliminated false positives in the security scanner where 40-character git commit SHAs were incorrectly flagged as API keys, improving the tool's accuracy and reducing noise.
+
+3. **Smart Three-Part Session Truncation**: Bob designed and implemented an intelligent truncation strategy that preserves 800 characters from the session head (task context), 400 characters of middle keywords (key decisions), and 1800 characters from the tail (recent progress and next steps), optimizing information density within token limits.
+
+The project demonstrates Bob's capabilities across multiple dimensions:
 
 ### Code Generation and Iteration
 
@@ -61,6 +89,10 @@ The `get_iam_token()` function handles IBM Cloud authentication, exchanging API 
 ### Meta-Development Process
 
 The most compelling demonstration of Bob's power is in the `bob_sessions/` folder. Files like `bob_task_reboot.md`, `bob_task_format_argument.md`, and `bob_task_max_new_tokens.md` show actual exported sessions from building ⚡ reB0ot. Each session was exported, processed through ⚡ reB0ot itself, and the resulting Restoration String was pasted back into Bob to resume work. This recursive workflow—using the tool to build itself—validates both Bob's capabilities and ⚡ reB0ot's effectiveness.
+
+### The Reboot Command: Autonomous Task Restoration
+
+During final testing, ⚡ reB0ot demonstrated its most powerful capability: **autonomous task completion across sessions**. In Session A, a snapshot workflow task was initiated but left incomplete when the user needed to manually export session history. The task state was captured in a Restoration String and saved to `.bob/context/reboot_latest.md`. In Session B, the user simply issued the `reboot` command—Bob read the restoration file, parsed the incomplete task state, identified the next required action, and autonomously completed the workflow by running `reboot.py` with the existing session file and saving the output. No manual intervention required. The task that was interrupted in one session was seamlessly resumed and completed in another, proving that ⚡ reB0ot doesn't just restore context—it enables true cognitive continuity across arbitrary time boundaries. This demonstration is documented in `bob_sessions/bob_task_may-16-2026_reboot-command-demo.md`.
 
 ### Specific Bob Features Used
 

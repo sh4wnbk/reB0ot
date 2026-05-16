@@ -4,6 +4,11 @@ import requests
 import textwrap
 import os
 import io
+import re
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # === CONFIGURATION ===
 WATSONX_API_KEY = os.environ.get("WATSONX_API_KEY", "")
@@ -61,6 +66,48 @@ LAST ACTION: Implemented markdown file reader in parser.py
 NEXT:        Integrate parser with main application flow
 DEAD ENDS:   JSON format, XML parsing"""
 
+# Valid field names for structured output parsing
+VALID_FIELDS = {"PROJECT", "STATE", "LAST ACTION", "NEXT", "DEAD ENDS", "DEADLINE", "NOTE"}
+
+# Context-specific credential patterns to detect actual credential exposure
+# without flagging legitimate content like git SHAs or base64 strings
+CREDENTIAL_PATTERNS = [
+    r'WATSONX_API_KEY\s*=\s*\S+',
+    r'PROJECT_ID\s*=\s*\S+',
+    r'api[_-]?key\s*[=:]\s*\S+',
+    r'password\s*[=:]\s*\S+',
+    r'secret\s*[=:]\s*\S+',
+]
+
+# Smart truncation constants for export text processing
+HEAD_CHARS = 800
+MIDDLE_CHARS = 400
+TAIL_CHARS = 1800
+MAX_EXPORT_CHARS = HEAD_CHARS + MIDDLE_CHARS + TAIL_CHARS
+
+
+def scan_for_credentials(text):
+    """Scan text for potential credentials and return True if found.
+    
+    Skips matches that contain placeholder-like text such as:
+    'your-', 'your_', 'example', 'placeholder', 'here', 'change-me', 'xxx'
+    """
+    placeholder_indicators = [
+        "your-", "your_", "example", "placeholder",
+        "here", "change-me", "xxx", "os.environ", "environ.get",
+        "getenv", "environ["
+    ]
+    
+    for pattern in CREDENTIAL_PATTERNS:
+        matches = re.finditer(pattern, text, re.IGNORECASE)
+        for match in matches:
+            matched_text = match.group(0).lower()
+            # Check if the matched text contains any placeholder indicators
+            is_placeholder = any(indicator in matched_text for indicator in placeholder_indicators)
+            if not is_placeholder:
+                return True
+    return False
+
 
 def get_iam_token(api_key):
     resp = requests.post(
@@ -88,10 +135,49 @@ def format_card(fields: dict) -> str:
 
 
 def generate_restoration_string(export_text, token, fmt="paragraph"):
-    # Take first 1500 chars (task context) + last 1500 chars (outcome)
-    # This ensures we capture both the initial task and the final result
-    if len(export_text) > 3000:
-        export_text = export_text[:1500] + "\n...\n" + export_text[-1500:]
+    # Smart three-part extraction: HEAD (task context) + MIDDLE (key events) + TAIL (recent outcome)
+    # Weighting: HEAD_CHARS/MIDDLE_CHARS/TAIL_CHARS — recent context is most valuable for restoration
+    if len(export_text) > MAX_EXPORT_CHARS:
+        head = export_text[:HEAD_CHARS]
+        tail = export_text[-TAIL_CHARS:]
+        
+        # Extract middle section and search for important keywords
+        middle_start = HEAD_CHARS
+        middle_end = len(export_text) - TAIL_CHARS
+        middle_section = export_text[middle_start:middle_end]
+        
+        # Keywords that indicate important content
+        keywords = ["Files Modified", "Error", "Fixed", "NEXT", "Decision"]
+        middle_extract = ""
+        
+        # Search for first keyword match with surrounding context
+        for keyword in keywords:
+            match_pos = middle_section.find(keyword)
+            if match_pos != -1:
+                # Find line boundaries around the match (2-3 lines of context)
+                lines = middle_section[:match_pos + 200].split('\n')
+                start_line = max(0, len(lines) - 4)  # 3 lines before + match line
+                
+                # Get surrounding lines
+                context_start = middle_section.rfind('\n', 0, match_pos - 100) + 1
+                if context_start == 0:
+                    context_start = 0
+                context_end = middle_section.find('\n', match_pos + 300)
+                if context_end == -1:
+                    context_end = match_pos + MIDDLE_CHARS
+                
+                middle_extract = middle_section[context_start:context_end]
+                # Limit to MIDDLE_CHARS
+                if len(middle_extract) > MIDDLE_CHARS:
+                    middle_extract = middle_extract[:MIDDLE_CHARS]
+                break
+        
+        # Assemble final text
+        if middle_extract:
+            export_text = head + "\n...\n" + middle_extract + "\n...\n" + tail
+        else:
+            # No keyword match found, use head + tail with new ratio
+            export_text = head + "\n...\n" + tail
     instruction = INSTRUCTION if fmt == "paragraph" else INSTRUCTION_STRUCTURED
     few_shot = FEW_SHOT_PARAGRAPH if fmt == "paragraph" else FEW_SHOT_STRUCTURED
     prompt = f"{instruction}\n\n{few_shot}\n\nInput:\n{export_text}\n\nOutput:"
@@ -109,15 +195,23 @@ def generate_restoration_string(export_text, token, fmt="paragraph"):
         "project_id": PROJECT_ID
     }
 
-    resp = requests.post(
-        f"{WATSONX_URL}/ml/v1/text/generation?version=2023-05-29",
-        json=payload,
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json"
-        }
-    )
-    resp.raise_for_status()
+    try:
+        resp = requests.post(
+            f"{WATSONX_URL}/ml/v1/text/generation?version=2023-05-29",
+            json=payload,
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json"
+            }
+        )
+        resp.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 403:
+            raise SystemExit("Error: API access denied (403). Check your WATSONX_API_KEY and PROJECT_ID.")
+        elif e.response.status_code == 429:
+            raise SystemExit("Error: Rate limit hit (429). Wait a moment and try again.")
+        else:
+            raise SystemExit(f"Error: API call failed ({e.response.status_code}): {e}")
     result = resp.json()["results"][0]["generated_text"].strip()
     
     if fmt == "structured":
@@ -129,6 +223,66 @@ def generate_restoration_string(export_text, token, fmt="paragraph"):
                 break
         result = "\n".join(clean[:6])
     return result
+
+
+def parse_next_options(next_value):
+    """
+    Parse NEXT field for multiple options and prompt user to select one.
+    
+    Args:
+        next_value: The NEXT field value that may contain multiple options
+        
+    Returns:
+        The selected option string, or the original value if no selection made
+    """
+    # Check if NEXT contains multiple options (or, comma, or multiple sentences)
+    has_or = " or " in next_value.lower()
+    has_comma = "," in next_value
+    has_multiple_sentences = next_value.count(".") > 1 or next_value.count(";") > 0
+    
+    if not (has_or or has_comma or has_multiple_sentences):
+        return next_value
+    
+    # Parse options
+    options = []
+    if has_or:
+        # Split by 'or' (case insensitive)
+        options = re.split(r'\s+or\s+', next_value, flags=re.IGNORECASE)
+    elif has_comma:
+        options = [opt.strip() for opt in next_value.split(",")]
+    else:  # Multiple sentences
+        # Split by period or semicolon
+        options = [opt.strip() for opt in re.split(r'[.;]', next_value) if opt.strip()]
+    
+    if len(options) <= 1:
+        return next_value
+    
+    # Display numbered menu
+    print("\nMultiple NEXT options detected:")
+    for i, option in enumerate(options, 1):
+        print(f"  {i}. {option}")
+    
+    # Check if stdin is a TTY (interactive terminal)
+    if not sys.stdin.isatty():
+        print("\n(Non-interactive terminal detected — skipping selection)")
+        print()  # Empty line before card
+        return next_value
+    
+    # Prompt for selection
+    while True:
+        try:
+            choice = input(f"\nSelect option (1-{len(options)}): ").strip()
+            choice_num = int(choice)
+            if 1 <= choice_num <= len(options):
+                selected = options[choice_num - 1]
+                print()  # Empty line before card
+                return selected
+            else:
+                print(f"Please enter a number between 1 and {len(options)}")
+        except (ValueError, KeyboardInterrupt):
+            print("\nKeeping original NEXT value")
+            print()  # Empty line before card
+            return next_value
 
 
 def main():
@@ -146,6 +300,12 @@ def main():
     parser.add_argument("--export", required=True, help="Path to the Bob session export .md file")
     parser.add_argument("--format", choices=["paragraph", "structured"],
                         default="paragraph", help="Output format")
+    parser.add_argument("--note", required=False, default=None,
+                        help="Optional human context — your current thought or intent")
+    parser.add_argument("--interactive", action="store_true",
+                        help="Interactive mode: prompt to select from multiple NEXT options")
+    parser.add_argument("--output", required=False, default=None,
+                        help="Save Restoration String to this file path (UTF-8)")
     args = parser.parse_args()
 
     try:
@@ -155,23 +315,48 @@ def main():
         print(f"Error: File not found: {args.export}")
         sys.exit(1)
 
+    # Scan for credentials before processing
+    if scan_for_credentials(export_text):
+        print("⚠️  WARNING: Potential credentials detected in export file.")
+        print("Review the file before processing. Exiting for security.")
+        sys.exit(1)
+
     print("Authenticating with IBM Cloud...")
     token = get_iam_token(WATSONX_API_KEY)
 
     print("Generating Restoration String...\n")
     result = generate_restoration_string(export_text, token, args.format)
 
+    # Prepare the output string
+    result_output = ""
     if args.format == "structured":
         fields = {}
         for line in result.split("\n"):
             if ":" in line:
                 key, _, val = line.partition(":")
-                fields[key.strip()] = val.strip()
-        print(format_card(fields))
+                key = key.strip()
+                # Only accept lines where the key matches a valid field name
+                if key in VALID_FIELDS:
+                    fields[key] = val.strip()
+                # Skip any line whose key is not in VALID_FIELDS (prevents preamble leak)
+        if args.note:
+            fields["NOTE"] = args.note
+        
+        # Interactive mode: parse NEXT field for multiple options
+        if args.interactive and "NEXT" in fields:
+            fields["NEXT"] = parse_next_options(fields["NEXT"])
+        
+        result_output = format_card(fields)
+        print(result_output)
     else:
-        print("=" * 60)
-        print(result)
-        print("=" * 60)
+        result_output = "=" * 60 + "\n" + result + "\n" + "=" * 60
+        print(result_output)
+    
+    # Save to file if --output is specified
+    if args.output:
+        with open(args.output, "w", encoding="utf-8") as f:
+            f.write(result_output)
+        print(f"\nSaved to {args.output}")
 
 
 if __name__ == "__main__":

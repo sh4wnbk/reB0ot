@@ -33,3 +33,6 @@ run.ps1
 # Review carefully before committing
 bob_sessions/*_debug.md
 bob_sessions/*_test.md
+
+# Bob context snapshots (session-specific, not for version control)
+.bob/context/

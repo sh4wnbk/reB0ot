@@ -1,4 +1,5 @@
 ![reB0ot — Your brain shouldn't be your only backup](bob_sessions/images/blueprint1.png)
+*AI-generated image created with Google Gemini. IBM Bob character © IBM Corporation.*
 
 # r⚡B0ot
 
@@ -29,8 +30,10 @@ Bob reads the Restoration String and picks up exactly where you left off — inc
 ## Demo
 
 ![reB0ot in the flow — developers back in context instantly](bob_sessions/images/blueprint2.png)
+*AI-generated image created with Google Gemini. IBM Bob character © IBM Corporation.*
 
 ![reB0ot team session snapshot — multiple projects, zero context loss](bob_sessions/images/blueprint3.png)
+*AI-generated image created with Google Gemini. IBM Bob character © IBM Corporation.*
 
 ---
 
@@ -161,6 +164,18 @@ This tool was built using itself. Every Bob session during development was expor
 ## Bob sessions
 
 All exported Bob task sessions are in `bob_sessions/` — full task history markdown files from both v1 (May 2026) and v2 (May 15–17, 2026 hackathon sprint).
+
+---
+
+## Legal
+
+This project is licensed under the [MIT License](LICENSE).
+
+**IBM Bob™** and **watsonx.ai™** are trademarks of IBM Corporation. This project is not affiliated with, endorsed by, or sponsored by IBM Corporation beyond participation in the IBM Bob Hackathon (May 15–17, 2026).
+
+AI-generated images in `bob_sessions/images/` were created using Google Gemini. The IBM Bob character depicted is the intellectual property of IBM Corporation.
+
+See [CONTRIBUTORS.md](CONTRIBUTORS.md) for the full list of contributors.
 
 ---
 

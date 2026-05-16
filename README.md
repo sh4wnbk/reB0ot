@@ -163,7 +163,7 @@ This tool was built using itself. Every Bob session during development was expor
 
 ## Bob sessions
 
-All exported Bob task sessions are in `bob_sessions/` — full task history markdown files from both v1 (May 2026) and v2 (May 15–17, 2026 hackathon sprint).
+All exported Bob task sessions are in `bob_sessions/` — full development history from the May 15–17, 2026 sprint.
 
 ---
 

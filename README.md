@@ -12,6 +12,13 @@ the first 20 minutes just figuring out where you left off. **r⚡B0ot** fixes th
 
 ---
 
+## Presentation
+
+- [Demo video](https://drive.google.com/file/d/1be6AY8JcR0dAQroBBr2hxqSRj3dKCUq-/view?usp=sharing)
+- [Slide deck (PDF)](https://drive.google.com/file/d/182OHq6RufR--64WgJbfwbmPzlrrtnzJP/view?usp=sharing)
+
+---
+
 ## What it does
 
 **r⚡B0ot** reads an IBM Bob IDE session export and generates a **Restoration String** — a compressed snapshot of exactly where you were, what you were doing, what you already tried, and what to do next.

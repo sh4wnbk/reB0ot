@@ -155,6 +155,26 @@ Built entirely using **IBM Bob IDE** across two hackathons. Every session was ex
 
 ---
 
+## Design Thinking
+
+r⚡B0ot was ideated using IBM Enterprise Design Thinking.
+
+The insight came from identifying the oldest unsolved problem in software development:
+
+> *"Where was I?"*
+>
+> Every developer. Every day. Since the first line of code was ever written — before Git, before IDEs, before AI. Nothing has ever solved it. You close your laptop. You come back. The mental thread is gone. The *"I was about to try X,"* the *"I chose Y over Z because…"* — evaporated.
+
+Bob already records everything. Every task, every decision, every generation. The session export is already required for judging. The raw material exists.
+
+The **Hill**:
+
+> **Developers using IBM Bob IDE** can restore full session context after any interruption — without manual reconstruction — **so that** time-to-productivity after a context switch drops from 20 minutes to under 5 seconds.
+
+That Hill drove every feature decision: the Restoration String format, the `DEAD ENDS` field (capturing what not to retry), and the two-command workflow that requires zero CLI knowledge to use.
+
+---
+
 ## The meta angle
 
 This tool was built using itself. Every Bob session during development was exported and processed through r⚡B0ot. The `/reboot` command restored context at the start of every session. The `bob_sessions/` folder contains the complete development history — over 20 exported sessions from this project alone.

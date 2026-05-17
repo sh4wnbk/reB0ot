@@ -1,4 +1,4 @@
-![reB0ot — Your brain shouldn't be your only backup](bob_sessions/images/blueprint1.png)
+![reB0ot — Your brain shouldn't be your only backup](bob_sessions/images/blueprint.png)
 *AI-generated image created with Google Gemini. IBM Bob character © IBM Corporation.*
 
 # r⚡B0ot

@@ -23,7 +23,7 @@ Wrote and edited all Python code across Code, Ask, Plan, Advanced, and Orchestra
 ### Claude Sonnet 4.6 (Anthropic)
 **Role:** Strategic layer — architecture review, prompt engineering, quality assurance  
 **Platform:** Claude Code (Anthropic)  
-Provided technical critique, drafted Bob task prompts, triaged bugs, reviewed outputs, and wrote the final README. Did not write application code directly — all implementation was executed by Bob.
+Provided technical critique, reviewed outputs, and contributed to documentation. Did not write application code directly — all implementation was executed by Bob.
 
 ---
 

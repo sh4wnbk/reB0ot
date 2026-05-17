@@ -137,9 +137,9 @@ Real sessions from this project's own development:
 
 ## How it was built
 
-Built entirely using **IBM Bob IDE** across two hackathons. Every session was exported and fed back through r⚡B0ot itself — the `bob_sessions/` folder is the proof.
+Built entirely using **IBM Bob IDE**. Every session was exported and fed back through r⚡B0ot itself — the `bob_sessions/` folder is the proof.
 
-**v2 improvements built during IBM Bob Hackathon, May 15–17, 2026:**
+**Features built during IBM Bob Hackathon, May 15–17, 2026:**
 - Smart three-part session truncation (head / keyword middle / tail)
 - Precision credential scanner with placeholder and code-pattern detection
 - `--interactive` mode for multi-option NEXT selection

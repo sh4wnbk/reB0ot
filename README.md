@@ -1,5 +1,5 @@
 ![reB0ot — Your brain shouldn't be your only backup](bob_sessions/images/blueprint.png)
-*AI-generated image created with Google Gemini. IBM Bob character © IBM Corporation.*
+<sub>AI-generated image created with Google Gemini. IBM Bob character © IBM Corporation.</sub>
 
 # r⚡B0ot
 
@@ -110,10 +110,10 @@ NOTE         ready for submission
 ## Showcase
 
 ![reB0ot in the flow — developers back in context instantly](bob_sessions/images/blueprint2.png)
-*AI-generated image created with Google Gemini. IBM Bob character © IBM Corporation.*
+<sub>AI-generated image created with Google Gemini. IBM Bob character © IBM Corporation.</sub>
 
 ![reB0ot team session snapshot — multiple projects, zero context loss](bob_sessions/images/blueprint3.png)
-*AI-generated image created with Google Gemini. IBM Bob character © IBM Corporation.*
+<sub>AI-generated image created with Google Gemini. IBM Bob character © IBM Corporation.</sub>
 
 Real sessions from this project's own development:
 

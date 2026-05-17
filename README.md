@@ -27,16 +27,6 @@ Bob reads the Restoration String and picks up exactly where you left off — inc
 
 ---
 
-## Demo
-
-![reB0ot in the flow — developers back in context instantly](bob_sessions/images/blueprint2.png)
-*AI-generated image created with Google Gemini. IBM Bob character © IBM Corporation.*
-
-![reB0ot team session snapshot — multiple projects, zero context loss](bob_sessions/images/blueprint3.png)
-*AI-generated image created with Google Gemini. IBM Bob character © IBM Corporation.*
-
----
-
 ## Bob Commands
 
 The fastest path — no CLI required:
@@ -52,6 +42,15 @@ Runs `reboot.py` against the current session export, saves the Restoration Strin
 /reboot
 ```
 Reads `.bob/context/reboot_latest.md` and restores full session context — project state, last action, next step, dead ends.
+
+---
+
+## How to export a Bob session
+
+1. In Bob IDE: **Views → More Actions → History**
+2. Select a task → click the **Export** icon
+3. Save the `.md` file
+4. Run `reboot.py` against it — or use `/snapshot` to do it automatically
 
 ---
 
@@ -108,16 +107,13 @@ NOTE         ready for submission
 
 ---
 
-## How to export a Bob session
-
-1. In Bob IDE: **Views → More Actions → History**
-2. Select a task → click the **Export** icon
-3. Save the `.md` file
-4. Run `reboot.py` against it — or use `/snapshot` to do it automatically
-
----
-
 ## Showcase
+
+![reB0ot in the flow — developers back in context instantly](bob_sessions/images/blueprint2.png)
+*AI-generated image created with Google Gemini. IBM Bob character © IBM Corporation.*
+
+![reB0ot team session snapshot — multiple projects, zero context loss](bob_sessions/images/blueprint3.png)
+*AI-generated image created with Google Gemini. IBM Bob character © IBM Corporation.*
 
 Real sessions from this project's own development:
 
@@ -132,26 +128,6 @@ Real sessions from this project's own development:
 ## Security
 
 **r⚡B0ot** scans every session export for potential credentials before sending anything to the API. If a real API key, password, or secret is detected, processing stops immediately. Placeholder values and code patterns are recognized and skipped automatically.
-
----
-
-## How it was built
-
-Built entirely using **IBM Bob IDE**. Every session was exported and fed back through r⚡B0ot itself — the `bob_sessions/` folder is the proof.
-
-**Features built during IBM Bob Hackathon, May 15–17, 2026:**
-- Smart three-part session truncation (head / keyword middle / tail)
-- Precision credential scanner with placeholder and code-pattern detection
-- `--interactive` mode for multi-option NEXT selection
-- `--note` annotation flag
-- `--output` flag for UTF-8 file export
-- `/snapshot` and `/reboot` Bob commands
-- 11-test suite with 100% pass rate
-
-**Stack:**
-- IBM Bob IDE — Code, Ask, Plan, Advanced, and Orchestrator modes
-- watsonx.ai — `meta-llama/llama-3-3-70b-instruct`
-- Python — CLI, API calls, card rendering
 
 ---
 
@@ -175,15 +151,23 @@ That Hill drove every feature decision: the Restoration String format, the `DEAD
 
 ---
 
-## The meta angle
+## How it was built
 
-This tool was built using itself. Every Bob session during development was exported and processed through r⚡B0ot. The `/reboot` command restored context at the start of every session. The `bob_sessions/` folder contains the complete development history — over 20 exported sessions from this project alone.
+Built entirely using **IBM Bob IDE** — and built using itself. Every development session was exported and processed through r⚡B0ot. The `/reboot` command restored context at the start of every session. The `bob_sessions/` folder contains the complete development history — over 20 exported sessions from this project alone.
 
----
+**Features built during IBM Bob Hackathon, May 15–17, 2026:**
+- Smart three-part session truncation (head / keyword middle / tail)
+- Precision credential scanner with placeholder and code-pattern detection
+- `--interactive` mode for multi-option NEXT selection
+- `--note` annotation flag
+- `--output` flag for UTF-8 file export
+- `/snapshot` and `/reboot` Bob commands
+- 11-test suite with 100% pass rate
 
-## Bob sessions
-
-All exported Bob task sessions are in `bob_sessions/` — full development history from the May 15–17, 2026 sprint.
+**Stack:**
+- IBM Bob IDE — Code, Ask, Plan, Advanced, and Orchestrator modes
+- watsonx.ai — `meta-llama/llama-3-3-70b-instruct`
+- Python — CLI, API calls, card rendering
 
 ---
 

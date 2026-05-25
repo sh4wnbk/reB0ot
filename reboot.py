@@ -136,6 +136,9 @@ def format_card(fields: dict) -> str:
 
 
 def generate_restoration_string(export_text, token, fmt="paragraph"):
+    # Strip workspace metadata blocks — file listings, cost, timestamps, never restoration-relevant
+    export_text = re.sub(r'<environment_details>.*?</environment_details>', '', export_text, flags=re.DOTALL)
+
     # Smart three-part extraction: HEAD (task context) + MIDDLE (key events) + TAIL (recent outcome)
     # Weighting: HEAD_CHARS/MIDDLE_CHARS/TAIL_CHARS — recent context is most valuable for restoration
     if len(export_text) > MAX_EXPORT_CHARS:

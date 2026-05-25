@@ -95,7 +95,8 @@ def scan_for_credentials(text):
     placeholder_indicators = [
         "your-", "your_", "example", "placeholder",
         "here", "change-me", "xxx", "os.environ", "environ.get",
-        "getenv", "environ["
+        "getenv", "environ[",
+        "config.", "secrets.", "${", ": str", ": int", ": dict", ": list", ": bool",
     ]
     
     for pattern in CREDENTIAL_PATTERNS:
